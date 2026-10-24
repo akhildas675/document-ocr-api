@@ -17,7 +17,7 @@ export const errorHandlerMiddleware :ErrorRequestHandler=(error,_req,res,_next)=
 
   if(error instanceof Error && error.message ==="Unsupported image type"){
 
-    res.status(401).json({
+    res.status(415).json({
       success:false,
       message:"Only JPEG, PNG, and WebP images are supported"
     });
