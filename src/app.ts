@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import ocrRoute from "./modules/routes/ocr.routes.js";
+import { errorHandlerMiddleware } from "./middlewares/error-handler.middleware.js";
 
 
 const app = express();
@@ -18,6 +20,9 @@ app.get("/api/health",(_req,res)=>{
     message:"Document is running"
   })
 })
+app.use('/api/ocr',ocrRoute)
+
+app.use(errorHandlerMiddleware)
 
 
 export default app
