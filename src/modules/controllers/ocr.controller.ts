@@ -5,8 +5,8 @@ import type { IOcrServices } from "../interface/ocr-service.interface.js";
 export class OcrController {
 
   constructor(
-    private _ocrService:IOcrServices
-  ){}
+    private _ocrService: IOcrServices
+  ) { }
 
   uploadOcrImages = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -16,26 +16,27 @@ export class OcrController {
       const frontImage = files?.frontImage?.[0]
       const backImage = files?.backImage?.[0]
 
-      if(!frontImage || !backImage){
+      if (!frontImage) {
         res.status(400).json({
-          success:false,
-          message:"Both frontImage and backImage required"
+          success: false,
+          message: "Atleast one image is required"
         });
         return
       }
 
-      const result = await this._ocrService.extractDocumentText(frontImage.buffer,backImage.buffer)
+      const result = await this._ocrService.extractDocumentText(frontImage.buffer, backImage?.buffer)
 
       res.status(200).json({
-        success:true,
-        message:"Text extracted successfully",
-
-        data:{
-          frontText:result.frontText,
-          backText:result.backText,
+        success: true,
+        message: "Text extracted successfully",
+        frontText: result.frontText,
+        backText: result.backText,
+        data: {
+          frontText: result.frontText,
+          backText: result.backText,
         }
       })
-      
+
     } catch (error) {
       next(error)
     }

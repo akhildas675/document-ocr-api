@@ -13,7 +13,7 @@ export class TesseractOcrProvider implements IOcrProvider{
     const processedImage = await this.imageProcessor.preprocess(imageBuffer)
 
     
-     const worker = await createWorker('eng');
+     const worker = await createWorker(['eng', 'hin']);
 
 
      try {
