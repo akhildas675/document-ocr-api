@@ -1,18 +1,27 @@
+
 import sharp from "sharp";
+
 import type { IImageProcessor } from "../modules/interface/ocr-image.process.interface.js";
 
 export class ImagePreprocessor implements IImageProcessor {
   async preprocess(imageBuffer: Buffer): Promise<Buffer> {
-    return sharp(imageBuffer)
+    if (!imageBuffer?.length) {
+      throw new Error("Cannot preprocess an empty image.");
+    }
+
+    return sharp(imageBuffer, {
+      failOn: "error",
+    })
       .rotate()
       .resize({
-        width: 2000,
-        height: 2000,
+        width: 2400,
+        height: 2400,
         fit: "inside",
-        withoutEnlargement: true,
+        withoutEnlargement: false,
       })
-      .greyscale()
+      .grayscale()
       .normalize()
+      .sharpen()
       .png()
       .toBuffer();
   }
