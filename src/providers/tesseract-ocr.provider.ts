@@ -5,8 +5,8 @@ import {
   type Worker,
 } from "tesseract.js";
 
-import type { IOcrProvider } from "../modules/interface/ocr-provider.interface.js";
-import type { IImageProcessor } from "../modules/interface/ocr-image.process.interface.js";
+import type { IOcrProvider } from "../interface/ocr-provider.interface.js";
+import type { IImageProcessor } from "../interface/ocr-image.process.interface.js";
 
 export class TesseractOcrProvider implements IOcrProvider {
   private workerPromise: Promise<Worker> | null = null;

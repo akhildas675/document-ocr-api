@@ -1,7 +1,7 @@
-import { ImagePreprocessor } from "../../providers/image-preprocessor.js";
+import { ImagePreprocessor } from "../../processors/image-processor.js";
 import { TesseractOcrProvider } from "../../providers/tesseract-ocr.provider.js";
-import { OcrController } from "../controllers/ocr.controller.js";
-import { OcrServices } from "../services/ocr.services.js";
+import { OcrController } from "../../controllers/ocr.controller.js";
+import { OcrServices } from "../../services/ocr.services.js";
 
 
 const imageProcessor = new ImagePreprocessor()

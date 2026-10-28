@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { uploadDocumentsImages } from "../../middlewares/upload.middleware.js";
+import { uploadDocumentsImages } from "../middlewares/upload.middleware.js";
 import { ocrController } from "../container/ocr.container.js";
+
 
 const ocrRoute = Router();
 
@@ -11,4 +12,4 @@ ocrRoute.post(
   uploadDocumentsImages,ocrController.uploadOcrImages
 )
 
-export default ocrRoute
+export default ocrRout

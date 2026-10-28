@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import ocrRoute from "./modules/routes/ocr.routes.js";
+import ocrRoute from "./routes/aadhaar.routes.js";
 import { errorHandlerMiddleware } from "./middlewares/error-handler.middleware.js";
 
 

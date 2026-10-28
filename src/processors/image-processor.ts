@@ -1,7 +1,7 @@
 
 import sharp from "sharp";
 
-import type { IImageProcessor } from "../modules/interface/ocr-image.process.interface.js";
+import type { IImageProcessor } from "../interface/ocr-image.process.interface.js";
 
 export class ImagePreprocessor implements IImageProcessor {
   async preprocess(imageBuffer: Buffer): Promise<Buffer> {
