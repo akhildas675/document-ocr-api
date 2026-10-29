@@ -19,38 +19,31 @@ export class AadhaarProcessingService {
     frontImage: Buffer,
     backImage: Buffer
   ): Promise<AadhaarResultDto> {
-
     await this.imageValidation.imageValidation(
       frontImage,
       backImage
     );
 
-  
     const processedFrontImage =
       await this.imageProcessor.preprocess(frontImage);
 
     const processedBackImage =
       await this.imageProcessor.preprocess(backImage);
 
-   
     const frontText =
       await this.ocrProvider.extractText(processedFrontImage);
 
     const backText =
       await this.ocrProvider.extractText(processedBackImage);
 
-    
     const frontDetails =
       this.extractionService.extractFrontDetails(frontText);
 
     const backDetails =
       this.extractionService.extractBackDetails(backText);
 
-   
     const validation = {
-      name: this.validationService.validateName(
-        frontDetails.name
-      ),
+      name: this.validationService.validateName(frontDetails.name),
       dateOfBirth: this.validationService.validateDateOfBirth(
         frontDetails.dateOfBirth
       ),
@@ -68,11 +61,10 @@ export class AadhaarProcessingService {
       ),
     };
 
-   
     return {
       frontImage: frontDetails,
       backImage: backDetails,
       validation,
-    } as AadhaarResultDto;
+    };
   }
 }

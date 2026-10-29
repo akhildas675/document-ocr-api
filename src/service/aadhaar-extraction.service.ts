@@ -1,4 +1,3 @@
-
 import type {
   FrontImageDetailsDto,
   BackImageDetailsDto,
@@ -21,53 +20,150 @@ export class AadhaarExtractionService {
     };
   }
 
+  private normalizeText(rawText: string): string {
+    return rawText
+      .replace(/\r/g, "")
+      .replace(/[ \t]+/g, " ")
+      .trim();
+  }
+
   private extractName(rawText: string): string | null {
-    const match = rawText.match(
-      /(?:^|\n)\s*(?:name\s*[:\-]\s*)([a-zA-Z ]{3,80})/i
+    const text = this.normalizeText(rawText);
+
+    const lines = text
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    const labelledMatch = text.match(
+      /(?:^|\n)\s*Name\s*[:\-]?\s*([A-Za-z][A-Za-z .'-]{1,79})/im,
     );
 
-    return match?.[1]?.trim() || null;
+    if (labelledMatch?.[1]) {
+      return labelledMatch[1].trim();
+    }
+
+    const dobIndex = lines.findIndex((line) =>
+      /\b(?:DOB|Date\s+of\s+Birth)\b/i.test(line),
+    );
+
+    if (dobIndex === -1) {
+      return null;
+    }
+
+    for (let i = dobIndex - 1; i >= Math.max(0, dobIndex - 3); i--) {
+      const line = lines[i];
+
+      if (!line) {
+        continue;
+      }
+
+      const candidate = line
+        .replace(/^[^A-Za-z]+/, "")
+        .replace(/[^A-Za-z .'-]/g, "")
+        .trim();
+
+      if (
+        candidate.length >= 3 &&
+        candidate.length <= 80 &&
+        /[A-Za-z]/.test(candidate) &&
+        !/\b(?:government|india|authority|unique identification)\b/i.test(
+          candidate,
+        )
+      ) {
+        return candidate;
+      }
+    }
+
+    return null;
   }
 
   private extractDateOfBirth(rawText: string): string | null {
-    const match = rawText.match(
-      /(?:DOB|Date of Birth)\s*[:\-]?\s*(\d{2}[\/.-]\d{2}[\/.-]\d{4}|\d{4}[\/.-]\d{2}[\/.-]\d{2})/i
+    const text = this.normalizeText(rawText);
+
+    const labelledMatch = text.match(
+      /(?:DOB|Date\s+of\s+Birth)\s*[:\-]?\s*(\d{2}[/. -]\d{2}[/. -]\d{4}|\d{4}[/. -]\d{2}[/. -]\d{2})/i,
     );
 
-    return match?.[1] || null;
+    if (labelledMatch?.[1]) {
+      return labelledMatch[1];
+    }
+
+    const dateMatch = text.match(
+      /\b(\d{2}[/-]\d{2}[/-]\d{4}|\d{4}-\d{2}-\d{2})\b/,
+    );
+
+    return dateMatch?.[1] ?? null;
   }
 
   private extractGender(rawText: string): string | null {
-    const match = rawText.match(/\b(MALE|FEMALE|TRANSGENDER)\b/i);
+    const match = this.normalizeText(rawText).match(
+      /\b(MALE|FEMALE|TRANSGENDER)\b/i,
+    );
 
     if (!match?.[1]) {
       return null;
     }
 
-    return match[1].toLowerCase().replace(/^./, (char) =>
-      char.toUpperCase()
-    );
+    const gender = match[1].toLowerCase();
+
+    return gender.charAt(0).toUpperCase() + gender.slice(1);
   }
 
   private extractAadhaarNumber(rawText: string): string | null {
-    const match = rawText.match(/\b\d{4}[ -]\d{4}[ -]\d{4}\b/);
+    const match = this.normalizeText(rawText).match(
+      /(?:^|\D)(\d{4}(?:[\s-]+\d{4}){2})(?!\d)/m,
+    );
 
-    return match?.[0]?.replace(/[ -]/g, " ") || null;
+    if (!match?.[1]) {
+      return null;
+    }
+
+    const digits = match[1].replace(/\D/g, "");
+
+    if (digits.length !== 12) {
+      return null;
+    }
+
+    return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
   }
 
   private extractAddress(rawText: string): string | null {
-    const match = rawText.match(
-      /Address\s*[:\-]?\s*([\s\S]*?)(?=\b(?:PIN\s*Code|Postal Code|VID|Help|www\.)\b|$)/i
+    const text = this.normalizeText(rawText);
+
+    const labelledMatch = text.match(
+      /Address\s*[:\-]?\s*([\s\S]*?)(?=\b(?:PIN\s*Code|Postal\s*Code|VID|Help)\b|www\.|$)/i,
     );
 
-    return match?.[1]?.replace(/\s+/g, " ").trim() || null;
+    if (!labelledMatch?.[1]) {
+      return null;
+    }
+
+    let address = labelledMatch[1].replace(/\s+/g, " ").trim();
+
+    address = address.replace(/,?\s*\b[1-9]\d{5}\s*$/, "").trim();
+
+    return address.length >= 5 ? address : null;
   }
 
   private extractPinCode(rawText: string): string | null {
-    const match = rawText.match(
-      /\b(?:PIN(?:\s*Code)?|Postal Code)\s*[:\-]?\s*(\d{6})\b/i
+    const text = this.normalizeText(rawText);
+
+    const labelledMatch = text.match(
+      /\b(?:PIN(?:\s*Code)?|Postal\s*Code)\s*[:\-]?\s*([1-9]\d{5})\b/i,
     );
 
-    return match?.[1] || null;
+    if (labelledMatch?.[1]) {
+      return labelledMatch[1];
+    }
+
+    const matches = [
+      ...text.matchAll(/(?:^|\D)([1-9]\d{5})(?=\s*(?:\n|$|[^\d]))/gm),
+    ];
+
+    const lastMatch = matches[matches.length - 1];
+const pinCode = lastMatch?.[1];
+
+return pinCode ?? null;
   }
 }
