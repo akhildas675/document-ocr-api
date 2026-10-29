@@ -1,11 +1,11 @@
 
 import type { NextFunction, Request, Response } from "express";
 import type { UploadImages } from "../interface/aadhaar.interface.js";
-import { AadhaarProcessingService } from "../service/aadhaar-processing.service.js";
+import type { IAadhaarProcessingService } from "../interface/aadhaar-processing-service.interface.js";
 
 export class AadhaarController {
   constructor(
-    private readonly _aadhaarProcessing = new AadhaarProcessingService()
+     private readonly _aadhaarProcessing: IAadhaarProcessingService
   ) {}
 
   uploadAadhaar = async (

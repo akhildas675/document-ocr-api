@@ -1,18 +1,20 @@
 
 import type { AadhaarResultDto } from "../dto/aadhaar-result.dto.js";
-import { ImageValidationService } from "./image-validation.service.js";
-import { SharpImageProcessorService } from "./sharp-image-processor.service.js";
-import { TesseractOcrProvider } from "./tesseract-ocr.provider.js";
-import { AadhaarExtractionService } from "./aadhaar-extraction.service.js";
-import { AadhaarValidationService } from "./aadhaar-validation.service.js";
+import type { IAadhaarExtractionService } from "../interface/aadhaar-extraction-service.interface.js";
+import type { IAadhaarProcessingService } from "../interface/aadhaar-processing-service.interface.js";
+import type { IAadhaarValidationService } from "../interface/aadhaar-validation-service.interface.js";
+import type { IImageProcessor } from "../interface/image-processor.interface.js";
+import type { IImageValidationService } from "../interface/image-validation-service.interface.js";
+import type { IOcrProvider } from "../interface/ocr-provider.interface.js";
 
-export class AadhaarProcessingService {
+
+export class AadhaarProcessingService implements IAadhaarProcessingService {
   constructor(
-    private readonly imageValidation = new ImageValidationService(),
-    private readonly imageProcessor = new SharpImageProcessorService(),
-    private readonly ocrProvider = new TesseractOcrProvider(),
-    private readonly extractionService = new AadhaarExtractionService(),
-    private readonly validationService = new AadhaarValidationService()
+    private readonly imageValidation: IImageValidationService,
+    private readonly imageProcessor: IImageProcessor,
+    private readonly ocrProvider: IOcrProvider,
+    private readonly extractionService: IAadhaarExtractionService,
+    private readonly validationService: IAadhaarValidationService
   ) {}
 
   async processAadhaar(

@@ -4,7 +4,7 @@ import type {
   BackImageDetailsDto,
 } from "../dto/aadhaar-result.dto.js";
 
-export class AadhaarExtractionService {
+export class AadhaarExtractionService implements AadhaarExtractionService {
   extractFrontDetails(rawText: string): FrontImageDetailsDto {
     return {
       name: this.extractName(rawText),

@@ -1,5 +1,6 @@
+import type { IAadhaarValidationService } from "../interface/aadhaar-validation-service.interface.js";
 
-export class AadhaarValidationService {
+export class AadhaarValidationService implements IAadhaarValidationService {
  
   validateAadhaarNumber(value: string | null): boolean {
     if (!value) {

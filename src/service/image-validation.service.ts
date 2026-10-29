@@ -1,6 +1,8 @@
 import sharp from "sharp";
+import type { IImageValidationService } from "../interface/image-validation-service.interface.js";
 
-export class ImageValidationService{
+
+export class ImageValidationService implements IImageValidationService{
   private async validateImage(imageBuffer:Buffer):Promise<void>{
   
       const metaData = await sharp(imageBuffer).metadata();
